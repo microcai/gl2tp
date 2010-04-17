@@ -36,7 +36,21 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_SUBST(prefix)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Define to the read-only architecture-independent data directory.])
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION(0.17.0)
+AM_GNU_GETTEXT_VERSION(0.16)
+
+
+PKG_CHECK_MODULES(GTK2, [
+    gtk+-2.0 >= 2.10
+])
+
+PKG_CHECK_MODULES(ALL_NEEDED, [
+	gtk+-2.0 >= 2.10 glib-2.0 
+])
+
+
+AC_DEFINE(MICROCAI_WITHEMAIL,"microcai@fedoraproject.org",[author microcai and his email])
+
+
 
 # OUTPUT files
 AC_CONFIG_FILES(po/Makefile.in

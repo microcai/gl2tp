@@ -1,0 +1,15 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.01\n"
+"Report-Msgid-Bugs-To: BUG REPORT URL\n"
+"POT-Creation-Date: 2010-04-17 16:48+0800\n"
+"PO-Revision-Date: 2010-04-11 16:57+0800\n"
+"Last-Translator: microcai <microcai@fedoraproject.org>\n"
+"Language-Team: zh_CN <microcai@fedoraproject.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: UTF-8\n"
+
+#: src/gl2tp.c:34
+msgid "ip to dial"
+msgstr "拨号服务器"

@@ -23,3 +23,12 @@ po/*.temp*
 po/en*.header
 po/*.sin
 po/Rules-quot
+po/POTFILES
+m4/
+install-sh
+ABOUT-NLS
+COPYING
+INSTALL
+*.m4
+
+
