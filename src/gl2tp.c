@@ -18,7 +18,9 @@ static void gl2tp_init(Gl2tp*);
 static void gl2tp_finalize(GObject*);
 static void gl2tp_set_property(GObject *object, guint property_id,const GValue *value, GParamSpec *pspec);
 static void gl2tp_get_property(GObject *object, guint property_id,GValue *value, GParamSpec *pspec);
+static void gl2tp_excute(GtkWidget *widget,gpointer user_data);
 static gboolean gtk_entry_focus(GtkWidget *widget, GdkEventFocus *event,gpointer user_data);
+
 
 G_DEFINE_TYPE(Gl2tp,gl2tp,GTK_TYPE_TABLE)
 
@@ -42,6 +44,8 @@ void gl2tp_class_init(Gl2tpClass*klass)
 
 	g_signal_new("status-changed",G_OBJECT_CLASS_TYPE(klass),G_SIGNAL_RUN_LAST,0,0,0,g_cclosure_marshal_VOID__STRING,G_TYPE_NONE,1,G_TYPE_STRING);
 	g_signal_new("status-restore",G_OBJECT_CLASS_TYPE(klass),G_SIGNAL_RUN_LAST,0,0,0,g_cclosure_marshal_VOID__VOID,G_TYPE_NONE,0);
+	g_signal_new("status-excute",G_OBJECT_CLASS_TYPE(klass),G_SIGNAL_RUN_LAST,0,0,0,g_cclosure_marshal_VOID__VOID,G_TYPE_NONE,0);
+	g_signal_new("status-connected",G_OBJECT_CLASS_TYPE(klass),G_SIGNAL_RUN_LAST,0,0,0,g_cclosure_marshal_VOID__VOID,G_TYPE_NONE,0);
 
 }
 
@@ -91,6 +95,8 @@ void gl2tp_init(Gl2tp* widget)
 	g_signal_connect(widget->passwd,"focus-in-event",G_CALLBACK(gtk_entry_focus),widget);
 	g_signal_connect(widget->passwd,"focus-out-event",G_CALLBACK(gtk_entry_focus),widget);
 
+	g_signal_connect(bt,"clicked",G_CALLBACK(gl2tp_excute),widget);
+
 //	gtk_statusbar_new();
 }
 
@@ -113,12 +119,17 @@ gboolean gtk_entry_focus(GtkWidget *widget, GdkEventFocus *event,gpointer user_d
 
 void gl2tp_finalize(GObject*obj)
 {
-
+	G_OBJECT_CLASS(gl2tp_parent_class)->finalize(obj);
 }
 
 GtkWidget * gl2tp_new()
 {
 	g_object_new(G_TYPE_GL2TP,NULL);
+}
+
+void gl2tp_excute(GtkWidget *widget,gpointer user_data)
+{
+
 }
 
 void gl2tp_set_property(GObject *object, guint property_id,const GValue *value, GParamSpec *pspec)
