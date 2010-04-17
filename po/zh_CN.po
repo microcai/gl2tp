@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.01\n"
 "Report-Msgid-Bugs-To: BUG REPORT URL\n"
-"POT-Creation-Date: 2010-04-17 16:48+0800\n"
+"POT-Creation-Date: 2010-04-18 01:36+0800\n"
 "PO-Revision-Date: 2010-04-11 16:57+0800\n"
 "Last-Translator: microcai <microcai@fedoraproject.org>\n"
 "Language-Team: zh_CN <microcai@fedoraproject.org>\n"
@@ -10,6 +10,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: UTF-8\n"
 
-#: src/gl2tp.c:34
-msgid "ip to dial"
+#: src/main.c:43
+msgid "set domain dir root"
+msgstr "设置翻译目录"
+
+#: src/main.c:43
+msgid "dir"
+msgstr "目录"
+
+#: src/main.c:82
+msgid "Ready"
+msgstr "就绪"
+
+#: src/gl2tp.c:51
+msgid "_ip to dial: "
 msgstr "拨号服务器"
+
+#: src/gl2tp.c:52
+msgid "_name: "
+msgstr "用户名(_N)"
+
+#: src/gl2tp.c:53
+msgid "_passwd: "
+msgstr "密码(_P)"
+
+#: src/gl2tp.c:70
+msgid "dial server ip address"
+msgstr "服务器IP地址"
+
+#: src/gl2tp.c:71
+msgid "username"
+msgstr "用户名"
+
+#: src/gl2tp.c:72
+msgid "passwd"
+msgstr "密码"
+
+#: src/gl2tp.c:103
+#, c-format
+msgid "input : %s"
+msgstr "输入： %s"

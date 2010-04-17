@@ -16,8 +16,9 @@
 static void gl2tp_class_init(Gl2tpClass*);
 static void gl2tp_init(Gl2tp*);
 static void gl2tp_finalize(GObject*);
-void gl2tp_set_property(GObject *object, guint property_id,const GValue *value, GParamSpec *pspec);
-void gl2tp_get_property(GObject *object, guint property_id,GValue *value, GParamSpec *pspec);
+static void gl2tp_set_property(GObject *object, guint property_id,const GValue *value, GParamSpec *pspec);
+static void gl2tp_get_property(GObject *object, guint property_id,GValue *value, GParamSpec *pspec);
+static gboolean gtk_entry_focus(GtkWidget *widget, GdkEventFocus *event,gpointer user_data);
 
 G_DEFINE_TYPE(Gl2tp,gl2tp,GTK_TYPE_TABLE)
 
@@ -38,6 +39,9 @@ void gl2tp_class_init(Gl2tpClass*klass)
 	g_object_class_install_property(gobjclass,GL2TP_IP,g_param_spec_string("ip","ip","ip","",G_PARAM_READWRITE));
 	g_object_class_install_property(gobjclass,GL2TP_NAME,g_param_spec_string("name","name","name","",G_PARAM_READWRITE));
 	g_object_class_install_property(gobjclass,GL2TP_PASSWD,g_param_spec_string("passwd","passwd","passwd","",G_PARAM_READWRITE));
+
+	g_signal_new("status-changed",G_OBJECT_CLASS_TYPE(klass),G_SIGNAL_RUN_LAST,0,0,0,g_cclosure_marshal_VOID__STRING,G_TYPE_NONE,1,G_TYPE_STRING);
+	g_signal_new("status-restore",G_OBJECT_CLASS_TYPE(klass),G_SIGNAL_RUN_LAST,0,0,0,g_cclosure_marshal_VOID__VOID,G_TYPE_NONE,0);
 
 }
 
@@ -63,9 +67,16 @@ void gl2tp_init(Gl2tp* widget)
 	widget->name = gtk_entry_new();
 	widget->passwd = gtk_entry_new();
 
+	gtk_widget_set_tooltip_text(widget->ip,_("dial server ip address"));//GTK_ENTRY_ICON_PRIMARY
+	gtk_widget_set_tooltip_text(widget->name,_("username"));//GTK_ENTRY_ICON_PRIMARY
+	gtk_widget_set_tooltip_text(widget->passwd,_("passwd"));//GTK_ENTRY_ICON_PRIMARY
+
 	gtk_table_attach(GTK_TABLE(widget),widget->ip,1,3,0,1,GTK_FILL,GTK_EXPAND,20,5);
 	gtk_table_attach(GTK_TABLE(widget),widget->name,1,3,1,2,GTK_FILL,GTK_EXPAND,20,5);
 	gtk_table_attach(GTK_TABLE(widget),widget->passwd,1,3,2,3,GTK_FILL,GTK_EXPAND,20,5);
+
+
+	"focus-out-event";
 
 	GtkWidget * bt = gtk_button_new_from_stock(GTK_STOCK_EXECUTE);
 
@@ -73,7 +84,31 @@ void gl2tp_init(Gl2tp* widget)
 
 	gtk_table_attach_defaults(GTK_TABLE(widget),bt,2,3,3,4);
 
-	gtk_statusbar_new();
+	g_signal_connect(widget->ip,"focus-in-event",G_CALLBACK(gtk_entry_focus),widget);
+	g_signal_connect(widget->ip,"focus-out-event",G_CALLBACK(gtk_entry_focus),widget);
+	g_signal_connect(widget->name,"focus-in-event",G_CALLBACK(gtk_entry_focus),widget);
+	g_signal_connect(widget->name,"focus-out-event",G_CALLBACK(gtk_entry_focus),widget);
+	g_signal_connect(widget->passwd,"focus-in-event",G_CALLBACK(gtk_entry_focus),widget);
+	g_signal_connect(widget->passwd,"focus-out-event",G_CALLBACK(gtk_entry_focus),widget);
+
+//	gtk_statusbar_new();
+}
+
+gboolean gtk_entry_focus(GtkWidget *widget, GdkEventFocus *event,gpointer user_data)
+{
+	if(event->in)
+	{
+		gchar * tip = gtk_widget_get_tooltip_text(widget);
+
+		gchar * status = g_strdup_printf(_("input : %s"),tip);
+		g_free(tip);
+		g_signal_emit_by_name(user_data,"status-changed",status);
+		g_free(status);
+	}else
+	{
+		g_signal_emit_by_name(user_data,"status-restore");
+	}
+	return FALSE;
 }
 
 void gl2tp_finalize(GObject*obj)
