@@ -44,8 +44,12 @@ PKG_CHECK_MODULES(GTK2, [
     gtk+-2.0 >= 2.10
 ])
 
+PKG_CHECK_MODULES(LIBUNIQUE, [
+    unique-1.0 
+])
+
 PKG_CHECK_MODULES(ALL_NEEDED, [
-	gtk+-2.0 >= 2.10 glib-2.0 
+	gtk+-2.0 >= 2.10 glib-2.0 unique-1.0 
 ])
 
 

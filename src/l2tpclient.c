@@ -14,6 +14,94 @@
 #include <netinet/in.h>
 #include "l2tpclient.h"
 #include "i18n.h"
+#include "md5.h"
+
+#define STRLEN 80
+#define MAXSTRLEN 120
+#define MD_SIG_SIZE 16
+
+struct challenge
+{
+    struct MD5Context md5;
+    unsigned char ss;           /* State we're sending in */
+    unsigned char secret[MAXSTRLEN];    /* The shared secret */
+    unsigned char *challenge;       /* The original challenge */
+    unsigned char response[MD_SIG_SIZE];        /* What we expect as a respsonse */
+    unsigned char reply[MD_SIG_SIZE];   /* What the peer sent */
+    unsigned char *vector;
+    unsigned int vector_len;
+    int state;                  /* What state is challenge in? */
+};
+
+struct tunnel
+{
+    int fc;                     /* Framing capabilities of peer */
+    struct schedule_entry *hello;
+    int ourfc;                  /* Our framing capabilities */
+    int bc;                     /* Peer's bearer channels */
+    int hbit;                   /* Allow hidden AVP's? */
+    int ourbc;                  /* Our bearer channels */
+    guint64 tb;                    /* Their tie breaker */
+    guint64 ourtb;                 /* Our tie breaker */
+    int tid;                    /* Peer's tunnel identifier */
+    int ourtid;                 /* Our tunnel identifier */
+    int qtid;                   /* TID for disconnection */
+    int firmware;               /* Peer's firmware revision */
+    struct sockaddr_in peer;    /* Peer's Address */
+    int debug;                  /* Are we debugging or not? */
+    int nego;                   /* Show Negotiation? */
+    int count;                  /* How many membmer calls? */
+    int state;                  /* State of tunnel */
+    guint16 control_seq_num;       /* Sequence for next packet */
+    guint16 control_rec_seq_num;   /* Next expected to receive */
+    int cLr;                    /* Last packet received by peer */
+    char hostname[MAXSTRLEN];   /* Remote hostname */
+    char vendor[MAXSTRLEN];     /* Vendor of remote product */
+    struct challenge chal_us;   /* Their Challenge to us */
+    struct challenge chal_them; /* Our challenge to them */
+    char secret[MAXSTRLEN];     /* Secret to use */
+    int rws;                    /* Peer's Receive Window Size */
+    int ourrws;                 /* Receive Window Size */
+    struct call *self;
+    struct lns *lns;            /* LNS that owns us */
+    struct lac *lac;            /* LAC that owns us */
+};
+
+
+struct lac
+{
+    struct sockaddr_in lns;           /* LNS's we can connect to */
+    struct schedule_entry *rsched;
+    int tun_rws;                /* Receive window size (tunnel) */
+    int call_rws;               /* Call rws */
+    int active;                 /* Is this connection in active use? */
+    int hbit;                   /* Permit hidden AVP's? */
+    int lbit;                   /* Use the length field? */
+    int challenge;              /* Challenge authenticate the peer? */
+    unsigned int localaddr;     /* Local IP address */
+    unsigned int remoteaddr;    /* Force remote address to this */
+    char authname[STRLEN];      /* Who we authenticate as */
+    char peername[STRLEN];      /* Force peer name to this */
+    char hostname[STRLEN];      /* Hostname to report */
+    char entname[STRLEN];       /* Name of this entry */
+    int authpeer;               /* Authenticate our peer? */
+    int authself;               /* Authenticate ourselves? */
+    int pap_require;            /* Require PAP auth for PPP */
+    int chap_require;           /* Require CHAP auth for PPP */
+    int pap_refuse;             /* Refuse PAP authentication for us */
+    int chap_refuse;            /* Refuse CHAP authentication for us */
+    int idle;                   /* Idle timeout in seconds */
+    int autodial;               /* Try to dial immediately? */
+    int defaultroute;           /* Use as default route? */
+    int redial;                 /* Redial if disconnected */
+    int rmax;                   /* Maximum # of consecutive redials */
+    int rtries;                 /* # of tries so far */
+    int rtimeout;               /* Redial every this many # of seconds */
+    char pppoptfile[STRLEN];    /* File containing PPP options */
+    int debug;
+    struct tunnel *t;           /* Our tunnel */
+    struct call *c;             /* Our call */
+};
 
 
 static void gl2tpclient_class_init(Gl2tpClientClass*);
@@ -41,7 +129,7 @@ void gl2tpclient_class_init(Gl2tpClientClass*klass)
 
 	int opt = 1;
 
-	setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,opt,sizeof(opt));
+	setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,&opt,sizeof(opt));
 
 	if (bind(sock, (struct sockaddr*) &addr, INET_ADDRSTRLEN) < 0)
 	{
@@ -55,7 +143,7 @@ void gl2tpclient_class_init(Gl2tpClientClass*klass)
 
 void gl2tpclient_init(Gl2tpClient*obj)
 {
-//	openpty();
+//	为 l2tp 隧道连接初始化
 
 
 
