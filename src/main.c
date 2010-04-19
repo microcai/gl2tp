@@ -22,26 +22,10 @@
 
 GtkWidget * status;
 
-static void show_status(GtkWidget* widget,const char * str, gpointer user_data)
-{
-	guint id = GPOINTER_TO_UINT(user_data);
-	gtk_statusbar_push((GtkStatusbar*)status,id,str);
-}
-
-static void pop_status(GtkWidget* widget,gpointer user_data)
-{
-	guint id = GPOINTER_TO_UINT(user_data);
-	gtk_statusbar_pop((GtkStatusbar*)status,id);
-
-}
-
-static UniqueResponse active_instance(UniqueApp *app, gint command,
-		UniqueMessageData *message_data, guint time_, gpointer user_data)
-{
-
-	gtk_window_present(GTK_WINDOW(user_data));
-	return UNIQUE_RESPONSE_OK;
-}
+static void show_status(GtkWidget* ,const char * , gpointer );
+static void pop_status(GtkWidget* ,gpointer );
+static UniqueResponse active_instance(UniqueApp *, gint,UniqueMessageData *, guint, gpointer);
+static gboolean gl2tp_load_config(gpointer);
 
 int main(int argc, char * argv[], char * env[])
 {
@@ -59,7 +43,6 @@ int main(int argc, char * argv[], char * env[])
 	};
 
 	g_set_prgname(PACKAGE_NAME);
-	g_set_application_name(_("gl2tp - GUI frontend for l2tp connection"));
 
 	if(G_UNLIKELY(!gtk_init_with_args(&argc, &argv,PACKAGE_STRING,args,PACKAGE_NAME,&err)))
 	{
@@ -71,6 +54,8 @@ int main(int argc, char * argv[], char * env[])
 		bindtextdomain(GETTEXT_PACKAGE,domain_dir);
 		g_free(domain_dir);
 	}
+
+	g_set_application_name(_("gl2tp - GUI frontend for l2tp connection"));
 
 	UniqueApp * unique = unique_app_new("net.vpn." PACKAGE_NAME,NULL);
 
@@ -131,7 +116,33 @@ int main(int argc, char * argv[], char * env[])
 	g_signal_connect(gl2tp,"status-changed",G_CALLBACK(show_status),GUINT_TO_POINTER(id));
 	g_signal_connect(gl2tp,"status-restore",G_CALLBACK(pop_status),GUINT_TO_POINTER(id));
 
+	g_idle_add(gl2tp_load_config,gl2tp);
+
 	gtk_widget_show_all(main);
 	gtk_main();
 	return 0;
+}
+
+static gboolean gl2tp_load_config(gpointer user_data)
+{
+	return FALSE;
+}
+
+static UniqueResponse active_instance(UniqueApp *app, gint command,
+		UniqueMessageData *message_data, guint time_, gpointer user_data)
+{
+	gtk_window_present(GTK_WINDOW(user_data));
+	return UNIQUE_RESPONSE_OK;
+}
+
+static void pop_status(GtkWidget* widget,gpointer user_data)
+{
+	guint id = GPOINTER_TO_UINT(user_data);
+	gtk_statusbar_pop((GtkStatusbar*)status,id);
+}
+
+static void show_status(GtkWidget* widget,const char * str, gpointer user_data)
+{
+	guint id = GPOINTER_TO_UINT(user_data);
+	gtk_statusbar_push((GtkStatusbar*)status,id,str);
 }
