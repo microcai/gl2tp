@@ -79,12 +79,7 @@ void gl2tp_init(Gl2tp* widget)
 	gtk_table_attach(GTK_TABLE(widget),widget->name,1,3,1,2,GTK_FILL,GTK_EXPAND,20,5);
 	gtk_table_attach(GTK_TABLE(widget),widget->passwd,1,3,2,3,GTK_FILL,GTK_EXPAND,20,5);
 
-
-	"focus-out-event";
-
 	GtkWidget * bt = gtk_button_new_from_stock(GTK_STOCK_EXECUTE);
-
-//	gtk_button_set_label(GTK_BUTTON(bt),_("_connect"));
 
 	gtk_table_attach_defaults(GTK_TABLE(widget),bt,2,3,3,4);
 

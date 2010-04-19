@@ -38,6 +38,7 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Define to the read-only 
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION(0.16)
 
+AC_CHECK_LIB([util],[openpty],[],[AC_MSG_FAILURE(function openpty() not found int libutil , please use glibc!,1)])
 
 PKG_CHECK_MODULES(GTK2, [
     gtk+-2.0 >= 2.10

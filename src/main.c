@@ -9,10 +9,13 @@
 #include <config.h>
 #endif
 
+#include <unistd.h>
+#include <pty.h>
 #include <gtk/gtk.h>
 #include "i18n.h"
 #include "gl2tp.h"
 #include "gl2tp_icon.h"
+#include "l2tpclient.h"
 
 GtkWidget * status;
 
@@ -26,8 +29,8 @@ static void pop_status(GtkWidget* widget,gpointer user_data)
 {
 	guint id = GPOINTER_TO_UINT(user_data);
 	gtk_statusbar_pop((GtkStatusbar*)status,id);
-}
 
+}
 
 int main(int argc, char * argv[], char * env[])
 {
@@ -56,6 +59,18 @@ int main(int argc, char * argv[], char * env[])
 		bindtextdomain(GETTEXT_PACKAGE,domain_dir);
 		g_free(domain_dir);
 	}
+
+	Gl2tpClient * l2client = gl2tpclient_new();
+
+	if(!gl2tpclient_bind(l2client))
+	{
+
+		GtkWidget  * dlg = gtk_message_dialog_new(NULL,GTK_DIALOG_MODAL,GTK_MESSAGE_ERROR,GTK_BUTTONS_CLOSE,
+				_("unable to bind to local port 1701? Another one running?"));
+		gtk_dialog_run(GTK_DIALOG(dlg));
+		g_error(_("unable to bind to local port 1701? Another one running?"));
+	}
+
 
 	GdkPixbuf	* pixbuf = gdk_pixbuf_new_from_inline(-1,gl2tp_icon,FALSE,NULL);
 
